@@ -23,13 +23,20 @@ public class GMatcher {
 
 	public HashMap<Integer, HashSet<String>> computeGroups() {
 		//1) create data structure
+		String[][] matrix = createMatrix(data.keySet());
+		PNode[] pNode = new PNode[numGroups];
 
 		//2) populate pgroups (randomly)
+		for (int i = 0; i < matrix.length; i++) {
+			pNode[i] = new PNode(matrix[i]);
+			pNode[i].shuffle();
+		}
 
 		//3) loop through crossing over pgroups. of the three per crossover (parent, parent, child), 
 		//		97/100 chance: calculate fitness and delete the least fit node
 		//		2/100 chance: randomly select 2 to avoid a local max
 		//		1/100 return a randomly mutated child
+		
 
 		//4) find the most fit node after n iterations, and repopulate based on this node by permutating psets
 
@@ -44,33 +51,6 @@ public class GMatcher {
 		return null;
 	}
 
-	public double computeFitness(HashSet<String> group) {
-		/*
-		factors: matches, gender balance, score balance, matches balance
-			within each group, calculate each of the factors
-
-		matches (only one to be implemented right now):
-			for person in the group,
-				for preference of the person,
-					if preference is in the group,
-						add weight*rank_preference to fitness number
-
-		gender balance (optional):
-			calculate overall gender average, calculate group gender average
-			=> gb = 100 - |gga - oga|
-
-		score balance (optional): 
-			calculate overall score range, calculate score average, group score average
-			=> sb = 100 - (sr/100)|gsa - osa|
-
-		match balance (optional):
-			per generation, keep track of match calculation, average @ at the end of match calculation
-			=> mb = 100 - |oma - mc|
-
-		with each thing calculated, multiply each score by the user inputted weight, add each factor
-			together to yield fitness calculation
-		*/
-	}
 
 	public String[][] createMatrix(Set<String> people) {
 		//step one for computeGroups
@@ -81,7 +61,8 @@ public class GMatcher {
 			res[i/numGroups][i%groupSize] = person;
 			i++;
 		}
+		return res;
 	}
 
-	public 
+
 }
