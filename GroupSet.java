@@ -2,18 +2,43 @@ import java.util.*;
 
 //Holds a pre-defined number of people for a group, calculates data such as fitness number
 public class GroupSet {
-	private HashMap<String, HashSet<String>> data;
+	private HashMap<String, HashSet<String>> preferences;
 	private int overallFitness, peoplePerGroup, numGroups, fitness;
 	private PNode[] pNodes;
 	private Group[] groups;
 	
-	public GroupSet(PNode[] nodes, HashMap<String, HashSet<String>> data) {
-		this.pNodes = nodes;
-		this.data = data;
-		this.peoplePerGroup = pNodes.length;
-		this.numGroups = pNodes[0].size();
-		this.groups = constructGroups();
-		fitness = computeFitness();
+	public GroupSet(String[][] data, HashMap<String, HashSet<String>> prefs) { 
+		this.preferences = prefs;
+		this.peoplePerGroup = data.length;
+		this.numGroups = data[0].length;
+		this.groups = constructGroups(data, prefs);
+		this.pNodes = populatePNodes(data);
+		this.fitness = computeFitness();
+	}
+
+	private Group[] constructGroups(String[][] matrix, HashMap<String, HashSet<String>> prefs) {
+
+		HashMap<String, HashSet<String>> group;
+		Group[] groups = new Group[numGroups];
+		for (int i = 0; i < numGroups; i++) {
+			group = new HashMap<String, HashSet<String>>();
+			for (int j = 0; j < peoplePerGroup; j++) {
+				group.put(matrix[j][i], prefs.get(matrix[j][i]));
+			}
+			groups[i] = new Group(group);
+		}
+		return groups;
+	}
+
+	private PNode[] populatePNodes(String[][] data) {
+		PNode[] res = new PNode[data.length];
+		int i = 0;
+		for (String[] arr : data) {
+			res[i] = new PNode(data[i]);
+			//res[i].shuffle();
+			i++;
+		}
+		return res;
 	}
 
 	private int computeFitness() {
@@ -24,22 +49,12 @@ public class GroupSet {
 		return overallFitness;
 	}
 
-	private Group[] constructGroups() {
-		HashMap<String, HashSet<String>> group;
-		Group[] groups = new Group[numGroups];
-		for (int i = 0; i < numGroups; i++) {
-			group = new HashMap<String, HashSet<String>>();
-			for (int j = 0; j < peoplePerGroup; j++) {
-				group.put(pNodes[j].get(i), null);
-			}
-			for (String s : group.keySet()) {
-				group.put(s, data.get(s));
-			}
-			groups[i] = new Group(group);
+	public void shuffle() {
+		for (int i = 0; i < pNodes.length; i++) {
+			pNodes[i].shuffle();
 		}
-		return groups;
 	}
-	
+
 	public Group[] getGroups() {
 		return groups;
 	}
@@ -47,5 +62,7 @@ public class GroupSet {
 	public int getFitness() {
 		return fitness;
 	}
+
+	
 
 }

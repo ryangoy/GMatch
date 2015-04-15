@@ -3,6 +3,7 @@ import java.util.*;
 //Input group members and preferences and output groups
 public class GMatcher {
 	int numChoices, numPeople, groupSize, numGroups;
+	final int SAMPLE_SIZE = 100;
 	HashMap<String, HashSet<String>> data;
 
 	public GMatcher(int numChoices, int numPeople, int groupSize) {
@@ -24,19 +25,19 @@ public class GMatcher {
 	public HashMap<Integer, HashSet<String>> computeGroups() {
 		//1) create data structure
 		String[][] matrix = createMatrix(data.keySet());
-		PNode[] pNode = new PNode[numGroups];
+		GroupSet[] sampleSet = new GroupSet[SAMPLE_SIZE];
 
 		//2) populate pgroups (randomly)
-		for (int i = 0; i < matrix.length; i++) {
-			pNode[i] = new PNode(matrix[i]);
-			pNode[i].shuffle();
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			sampleSet[i] = new GroupSet(matrix, data);
+			sampleSet[i].shuffle();
 		}
 
 		//3) loop through crossing over pgroups. of the three per crossover (parent, parent, child), 
 		//		97/100 chance: calculate fitness and delete the least fit node
 		//		2/100 chance: randomly select 2 to avoid a local max
 		//		1/100 return a randomly mutated child
-		
+
 
 		//4) find the most fit node after n iterations, and repopulate based on this node by permutating psets
 
