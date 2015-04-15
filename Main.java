@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.HashSet;
 //@author Ryan Goy 
 
@@ -21,7 +22,7 @@ public class Main {
 					getPreferences();
 					GMatcher gm = new GMatcher(numChoices, numPeople, groupSize);
 					addPeople(gm, numPeople);
-					HashMap<Integer, HashSet<String>> groups = gm.computeGroups();
+					HashMap<Integer, Set<String>> groups = gm.computeGroups();
 					printGroups(groups);
 					break;
 			} //end switch
@@ -92,9 +93,11 @@ public class Main {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 
-	private static void printGroups(HashMap<Integer, HashSet<String>> groups) {
+	private static void printGroups(HashMap<Integer, Set<String>> groups) {
+		System.out.println("Your optimized groups are:");
 		for (int i : groups.keySet()) {
 			System.out.printf("Group %d:\n", i);
 			for (String person : groups.get(i)) {

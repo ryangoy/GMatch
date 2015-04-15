@@ -51,7 +51,7 @@ public class Group {
 		return fitness;
 	}
 	
-	public Set getGroup() {
+	public Set<String> getGroup() {
 		return gData.keySet();
 	}
 

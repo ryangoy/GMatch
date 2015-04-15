@@ -5,6 +5,7 @@ public class GMatcher {
 	int numChoices, numPeople, groupSize, numGroups;
 	final int SAMPLE_SIZE = 25;
 	final int NUM_ITERATIONS = 100;
+	final int NUM_RESET = 10;
 	HashMap<String, HashSet<String>> data;
 
 	public GMatcher(int numChoices, int numPeople, int groupSize) {
@@ -23,7 +24,7 @@ public class GMatcher {
 		this.data = data;
 	}
 
-	public HashMap<Integer, HashSet<String>> computeGroups() {
+	public HashMap<Integer, Set<String>> computeGroups() {
 		//1) create data structure
 		GroupSet.setPreferences(data);
 		String[][] matrix = createMatrix(data.keySet());
@@ -44,7 +45,7 @@ public class GMatcher {
 		for (int n = 0; n < NUM_ITERATIONS; n++) {
 			//this for loop crosses over all of the GroupSets
 			//its a long loop so I'll modularize it later
-			for (int i = 0; i < SAMPLE_SIZE; i += 2) {
+			for (int i = 0; i < SAMPLE_SIZE - 1; i += 2) {
 				GroupSet parent1 = sampleSet[i];
 				GroupSet parent2 = sampleSet[i+1];
 				GroupSet child = GroupSet.crossover(parent1, parent2);
@@ -69,10 +70,9 @@ public class GMatcher {
 			}//end of crossover loop
 			sampleSet = shuffleGroupSets(sampleSet);
 		}
-
+		GroupSet res = findBestFit(sampleSet);
 
 		//4) find the most fit node after n iterations, and repopulate based on this node by permutating psets
-		
 
 		//5) repeat crossover/mutation and bottleneck m times (i.e. go back to step 3)
 
@@ -82,31 +82,46 @@ public class GMatcher {
 
 		//create groups from the pgroups
 
-		return null;
+		return res.toMap();
 	}
 
 	public String[][] createMatrix(Set<String> people) {
 		//step one for computeGroups
 		String[][] res = new String[groupSize][numGroups];
-		Arrays.fill(res, null);
 		int i = 0;
 		for (String person : people) {
-			res[i/numGroups][i%groupSize] = person;
+			res[i/numGroups][i%numGroups] = person;
 			i++;
 		}
 		return res;
 	}
 
+	public GroupSet findBestFit(GroupSet[] set) {
+		int best = 0;
+		GroupSet curr = set[0];
+		for (GroupSet g : set) {
+			if (g.getFitness() > curr.getFitness()) {
+				best = g.getFitness();
+				curr = g;
+			}
+		}
+		return curr;
+	}
+
 	public GroupSet[] shuffleGroupSets(GroupSet[] ar) {
-		Random rnd = new Random();
-		for (int i = ar.length - 1; i > 0; i--) {
-			int index = rnd.nextInt(i + 1);
-			// Simple swap
-			GroupSet a = ar[index];
-			ar[index] = ar[i];
-			ar[i] = a;
+		for (GroupSet g : ar) {
+			g.shuffle();
 		}
 		return ar;
+			// Random rnd = new Random();
+			// for (int i = ar.length - 1; i > 0; i--) {
+			// 	int index = rnd.nextInt(i + 1);
+			// 	// Simple swap
+			// 	GroupSet a = ar[index];
+			// 	ar[index] = ar[i];
+			// 	ar[i] = a;
+			// }
+			// return ar;
 	}
 
 

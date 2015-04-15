@@ -53,9 +53,11 @@ public class GroupSet {
 	}
 
 	public void shuffle() {
-		for (int i = 0; i < pNodes.length; i++) {
-			pNodes[i].shuffle();
-		}
+		// for (int i = 0; i < pNodes.length; i++) {
+		// 	//groups[i].shuffle();
+
+		// }
+		shufflePNodes();
 	}
 
 	public Group[] getGroups() {
@@ -85,5 +87,25 @@ public class GroupSet {
 			}
 		}
 		return new GroupSet(c);
+
+	}
+
+	private void shufflePNodes() {
+		Random rnd = new Random();
+		for (int i = pNodes.length - 1; i > 0; i--) {
+			int index = rnd.nextInt(i + 1);
+			// Simple swap
+			PNode a = pNodes[index];
+			pNodes[index] = pNodes[i];
+			pNodes[i] = a;
+		}
+	}
+
+	public HashMap<Integer, Set<String>> toMap() {
+		HashMap<Integer, Set<String>> map = new HashMap<Integer, Set<String>>();
+		for (int i = 0; i < numGroups; i++) {
+			map.put(i, groups[i].getGroup());
+		}
+		return map;
 	}
 }
