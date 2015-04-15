@@ -32,4 +32,8 @@ public class PNode {
 		return arr.length;
 	}
 
+	public String[] getArr() {
+		return arr;
+	}
+
 }
