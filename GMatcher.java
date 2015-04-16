@@ -2,7 +2,7 @@ import java.util.*;
 
 //Input group members and preferences and output groups
 public class GMatcher {
-	int numChoices, numPeople, groupSize, numGroups;
+	static int numChoices, numPeople, groupSize, numGroups;
 	final static int SAMPLE_SIZE = 25;
 	final static int NUM_ITERATIONS = 100;
 	final static int NUM_RESET = 10;
@@ -28,43 +28,42 @@ public class GMatcher {
 		//1) create data structure
 		GroupSet.setPreferences(data);
 		String[][] matrix = createMatrix(data.keySet());
-		GroupSet[] sampleSet = new GroupSet[SAMPLE_SIZE];
-
-		//2) populate groupsets (randomly)
-		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			sampleSet[i] = new GroupSet(matrix);
-			sampleSet[i].shuffle();
-			//sampleSet[i].print();
-		}
-
 		
 
-		//3) loop randomly through crossing over pgroups. of the three per crossover (parent, parent, child), 
-		//		97/100 chance: calculate fitness and delete the least fit node
-		//		2/100 chance: randomly select 2 to avoid a local max
-		//		1/100 return a randomly mutated child
-		// *currently doesn't implement random actions
+		//2) populate groupsets (randomly)
+		GroupSet[] sampleSet = populateSet(matrix);
 
-		for (int n = 0; n < NUM_ITERATIONS; n++) {
-			sampleSet = crossOver(sampleSet);
-			sampleSet = shuffleGroupSets(sampleSet);
-		}
-		GroupSet res = findBestFit(sampleSet);
+		int m = 0;
+		GroupSet res;
+		do {
+			//3) loop randomly through crossing over pgroups. of the three per crossover (parent, parent, child), 
+			//		97/100 chance: calculate fitness and delete the least fit node
+			//		2/100 chance: randomly select 2 to avoid a local max
+			//		1/100 return a randomly mutated child
+			// 		***currently doesn't implement random actions***
+			for (int n = 0; n < NUM_ITERATIONS; n++) {
+				sampleSet = crossOver(sampleSet);
+				sampleSet = standardShuffle(sampleSet);
+			}
 
-		//4) find the most fit node after n iterations, and repopulate based on this node by permutating psets
+			//4) find the most fit node after n iterations
+			res = findBestFit(sampleSet);
 
-		//5) repeat crossover/mutation and bottleneck m times (i.e. go back to step 3)
+			//5) repopulate based on this node by permutating psets
+			res.shuffleGroups();
+			matrix = res.toMatrix();
+			sampleSet = populateSet(matrix);
 
-		//6) optional: calculate fitness efficiency score: (calculated fitness) / (possible matches)
+		//6) repeat crossover/mutation and bottleneck m times (i.e. go back to step 3)
+			m++;
+		} while (m < NUM_RESET);
 
-		//change the orientation of pgroups
-
-		//create groups from the pgroups
+		//7) optional: calculate fitness efficiency score: (calculated fitness) / (possible matches)
 
 		return res.toMap();
 	}
 
-	public String[][] createMatrix(Set<String> people) {
+	public static String[][] createMatrix(Set<String> people) {
 		//step one for computeGroups
 		String[][] res = new String[groupSize][numGroups];
 		int i = 0;
@@ -73,6 +72,16 @@ public class GMatcher {
 			i++;
 		}
 		return res;
+	}
+
+	public static GroupSet[] populateSet(String[][] matrix) {
+		GroupSet[] sampleSet = new GroupSet[SAMPLE_SIZE];
+		for (int i = 0; i < SAMPLE_SIZE; i++) {
+			sampleSet[i] = new GroupSet(matrix);
+			sampleSet[i].shuffle();
+			//sampleSet[i].print();
+		}
+		return sampleSet;
 	}
 
 	public static GroupSet[] crossOver(GroupSet[] sampleSet) {
@@ -99,7 +108,8 @@ public class GMatcher {
 					sampleSet[i + 1] = parent2;
 				}
 			}
-		}//end of crossover loop
+			//System.out.println("Fitness: " + fp1);
+		}
 		return sampleSet;
 	}
 
@@ -115,20 +125,11 @@ public class GMatcher {
 		return curr;
 	}
 
-	public static GroupSet[] shuffleGroupSets(GroupSet[] ar) {
+	public static GroupSet[] standardShuffle(GroupSet[] ar) {
 		for (GroupSet g : ar) {
 			g.shuffle();
 		}
 		return ar;
-			// Random rnd = new Random();
-			// for (int i = ar.length - 1; i > 0; i--) {
-			// 	int index = rnd.nextInt(i + 1);
-			// 	// Simple swap
-			// 	GroupSet a = ar[index];
-			// 	ar[index] = ar[i];
-			// 	ar[i] = a;
-			// }
-			// return ar;
 	}
 
 

@@ -24,6 +24,10 @@ public class PNode {
 		}
 	}
 
+	public void set(int index, String s) {
+		arr[index] = s;
+	}
+
 	public String get(int index) {
 		return arr[index];
 	}

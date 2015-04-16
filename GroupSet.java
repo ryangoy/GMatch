@@ -56,21 +56,8 @@ public class GroupSet {
 		for (int i = 0; i < pNodes.length; i++) {
 			//groups[i].shuffle();
 			pNodes[i].shuffle();
-
 		}
 		//shufflePNodes();
-	}
-
-	public Group[] getGroups() {
-		return groups;
-	}
-
-	public PNode[] getPNodes() {
-		return pNodes;
-	}
-
-	public int getFitness() {
-		return fitness;
 	}
 
 	public static GroupSet crossover(GroupSet a, GroupSet b) {
@@ -92,6 +79,7 @@ public class GroupSet {
 	}
 
 	private void shufflePNodes() {
+		//shuffles the units INSIDE PNODES (i.e. changes who is in what group)
 		Random rnd = new Random();
 		for (int i = pNodes.length - 1; i > 0; i--) {
 			int index = rnd.nextInt(i + 1);
@@ -102,12 +90,53 @@ public class GroupSet {
 		}
 	}
 
+	public void shuffleGroups() {
+		for (int i = 0; i < numGroups; i++) {
+			shuffleGroup(i);
+		}
+	}
+
+	private void shuffleGroup(int n) {
+		//shuffles the units INSIDE GROUPS (i.e. changes who is in what pnode)
+		Random rnd = new Random();
+		for (int i = peoplePerGroup - 1; i > 0; i--) {
+			int index = rnd.nextInt(i + 1);
+
+			//okay pretty sure this doesn't work but let's give it a go... haha its 330 am >.>
+			String s = pNodes[index].get(n);
+			pNodes[index].set(n, pNodes[i].get(n));
+			pNodes[i].set(n, s);
+		}
+	}
+
 	public HashMap<Integer, Set<String>> toMap() {
 		HashMap<Integer, Set<String>> map = new HashMap<Integer, Set<String>>();
 		for (int i = 0; i < numGroups; i++) {
 			map.put(i, groups[i].getGroup());
 		}
 		return map;
+	}
+
+	public Group[] getGroups() {
+		return groups;
+	}
+
+	public PNode[] getPNodes() {
+		return pNodes;
+	}
+
+	public int getFitness() {
+		return fitness;
+	}
+
+	public String[][] toMatrix() {
+		String[][] matrix = new String[peoplePerGroup][];
+		int i = 0;
+		for (PNode p : pNodes) {
+			matrix[i] = p.getArr();
+			i++;
+		}
+		return matrix;
 	}
 
 	public void print() {
