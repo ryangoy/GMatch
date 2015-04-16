@@ -26,7 +26,9 @@ public class GroupSet {
 		for (int i = 0; i < numGroups; i++) {
 			group = new HashMap<String, HashSet<String>>();
 			for (int j = 0; j < peoplePerGroup; j++) {
-				group.put(matrix[j][i], preferences.get(matrix[j][i]));
+				if (matrix[j][i] != null) {
+					group.put(matrix[j][i], preferences.get(matrix[j][i]));
+				}
 			}
 			groups[i] = new Group(group);
 		}
