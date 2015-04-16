@@ -109,4 +109,14 @@ public class GroupSet {
 		}
 		return map;
 	}
+
+	public void print() {
+		System.out.println("Printing set...");
+		for (PNode p : pNodes) {
+			for (String s : p.getArr()) {
+				System.out.print(s + " ");
+			}
+			System.out.println();
+		}
+	}
 }

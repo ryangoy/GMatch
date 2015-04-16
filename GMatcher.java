@@ -34,7 +34,10 @@ public class GMatcher {
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
 			sampleSet[i] = new GroupSet(matrix);
 			sampleSet[i].shuffle();
+			//sampleSet[i].print();
 		}
+
+		
 
 		//3) loop randomly through crossing over pgroups. of the three per crossover (parent, parent, child), 
 		//		97/100 chance: calculate fitness and delete the least fit node
