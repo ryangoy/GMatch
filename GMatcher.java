@@ -3,9 +3,9 @@ import java.util.*;
 //Input group members and preferences and output groups
 public class GMatcher {
 	int numChoices, numPeople, groupSize, numGroups;
-	final int SAMPLE_SIZE = 25;
-	final int NUM_ITERATIONS = 100;
-	final int NUM_RESET = 10;
+	final static int SAMPLE_SIZE = 25;
+	final static int NUM_ITERATIONS = 100;
+	final static int NUM_RESET = 10;
 	HashMap<String, HashSet<String>> data;
 
 	public GMatcher(int numChoices, int numPeople, int groupSize) {
@@ -46,31 +46,7 @@ public class GMatcher {
 		// *currently doesn't implement random actions
 
 		for (int n = 0; n < NUM_ITERATIONS; n++) {
-			//this for loop crosses over all of the GroupSets
-			//its a long loop so I'll modularize it later
-			for (int i = 0; i < SAMPLE_SIZE - 1; i += 2) {
-				GroupSet parent1 = sampleSet[i];
-				GroupSet parent2 = sampleSet[i+1];
-				GroupSet child = GroupSet.crossover(parent1, parent2);
-				int fp1 = parent1.getFitness();
-				int fp2 = parent2.getFitness();
-				int fc = child.getFitness();
-				if (fc > fp1) {
-					sampleSet[i] = child;
-					if (fp1 > fp2) {
-						sampleSet[i + 1] = parent1;
-					} else {
-						sampleSet[i + 1] = parent2;
-					}
-				} else {
-					sampleSet[i] = parent1;
-					if (fc > fp2) {
-						sampleSet[i + 1] = child;
-					} else {
-						sampleSet[i + 1] = parent2;
-					}
-				}
-			}//end of crossover loop
+			sampleSet = crossOver(sampleSet);
 			sampleSet = shuffleGroupSets(sampleSet);
 		}
 		GroupSet res = findBestFit(sampleSet);
@@ -99,7 +75,35 @@ public class GMatcher {
 		return res;
 	}
 
-	public GroupSet findBestFit(GroupSet[] set) {
+	public static GroupSet[] crossOver(GroupSet[] sampleSet) {
+		//crosses over the whole sample set
+		for (int i = 0; i < SAMPLE_SIZE - 1; i += 2) {
+			GroupSet parent1 = sampleSet[i];
+			GroupSet parent2 = sampleSet[i+1];
+			GroupSet child = GroupSet.crossover(parent1, parent2);
+			int fp1 = parent1.getFitness();
+			int fp2 = parent2.getFitness();
+			int fc = child.getFitness();
+			if (fc > fp1) {
+				sampleSet[i] = child;
+				if (fp1 > fp2) {
+					sampleSet[i + 1] = parent1;
+				} else {
+					sampleSet[i + 1] = parent2;
+				}
+			} else {
+				sampleSet[i] = parent1;
+				if (fc > fp2) {
+					sampleSet[i + 1] = child;
+				} else {
+					sampleSet[i + 1] = parent2;
+				}
+			}
+		}//end of crossover loop
+		return sampleSet;
+	}
+
+	public static GroupSet findBestFit(GroupSet[] set) {
 		int best = 0;
 		GroupSet curr = set[0];
 		for (GroupSet g : set) {
@@ -111,7 +115,7 @@ public class GMatcher {
 		return curr;
 	}
 
-	public GroupSet[] shuffleGroupSets(GroupSet[] ar) {
+	public static GroupSet[] shuffleGroupSets(GroupSet[] ar) {
 		for (GroupSet g : ar) {
 			g.shuffle();
 		}
