@@ -53,11 +53,12 @@ public class GroupSet {
 	}
 
 	public void shuffle() {
-		// for (int i = 0; i < pNodes.length; i++) {
-		// 	//groups[i].shuffle();
+		for (int i = 0; i < pNodes.length; i++) {
+			//groups[i].shuffle();
+			pNodes[i].shuffle();
 
-		// }
-		shufflePNodes();
+		}
+		//shufflePNodes();
 	}
 
 	public Group[] getGroups() {
